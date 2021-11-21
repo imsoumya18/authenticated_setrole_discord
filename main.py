@@ -16,7 +16,6 @@ async def on_message(message):
     if message.content.startswith('!setpswd'):
         with open('backup.json', 'r') as f:
             data = json.load(f)
-            curr = data['password']
         with open('backup.json', 'w') as f:
             new = message.content.split()[1]
             data['password'] = new

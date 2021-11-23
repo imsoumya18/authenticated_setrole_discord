@@ -1,10 +1,7 @@
-import json
+x = 'my name is soumyadeep'
+y = 'na'
 
-with open('backup.json', 'r') as f:
-    data = json.load(f)
-
-print(data)
-
-# with open('backup.json', 'w') as f:
-#     data['age'] += 1
-#     json.dump(data, f)
+if y in x:
+    print('Found')
+else:
+    print('Not found')

@@ -1,10 +1,15 @@
 import discord
+import asyncio
+from datetime import datetime, date, time, timedelta
 from discord.utils import get
 
 RECORDS_BACKUP_CHANNEL = 912679967228297256
 VERIFICATION_CHANNEL = 910138431986876429
+COUNTDOWN_CHANNEL = 912406038983098429
 PASSWORD_MESSAGE = 912689722776780853
 KEYHOLDER_PASSWORD_MESSAGE = 912693500104040478
+TARGET_DATE_MESSAGE = 913150001968975922
+WHEN = (datetime.combine(date.today(), time(1, 9, 00)) + timedelta(hours=-5, minutes=-30)).time()
 
 TOKEN = ''
 
@@ -14,6 +19,32 @@ bot = discord.Client()
 @bot.event
 async def on_ready():
     print('Started')
+
+
+async def called_once_a_day():
+    await bot.wait_until_ready()
+    cnt = await bot.get_channel(RECORDS_BACKUP_CHANNEL).fetch_message(TARGET_DATE_MESSAGE)
+    dt = cnt.content.split()
+    end = datetime(int(dt[-3]), int(dt[-2]), int(dt[-1]))
+    today = datetime.today()
+    await bot.get_channel(COUNTDOWN_CHANNEL).edit(name=str((end - today).days) + ' days remaining!')
+
+
+async def background_task():
+    now = datetime.utcnow()
+    if now.time() > WHEN:
+        tomorrow = datetime.combine(now.date() + timedelta(days=1), time(0))
+        seconds = (tomorrow - now).total_seconds()
+        await asyncio.sleep(seconds)
+    while True:
+        now = datetime.utcnow()
+        target_time = datetime.combine(now.date(), WHEN)
+        seconds_until_target = (target_time - now).total_seconds()
+        await asyncio.sleep(seconds_until_target)
+        await called_once_a_day()
+        tomorrow = datetime.combine(now.date() + timedelta(days=1), time(0))
+        seconds = (tomorrow - now).total_seconds()
+        await asyncio.sleep(seconds)
 
 
 @bot.event
@@ -57,4 +88,5 @@ async def on_message(message):
         await message.channel.send(embed=embedparam)
 
 
+bot.loop.create_task(background_task())
 bot.run(TOKEN)

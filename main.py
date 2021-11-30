@@ -6,10 +6,13 @@ from discord.utils import get
 RECORDS_BACKUP_CHANNEL = 912679967228297256
 VERIFICATION_CHANNEL = 910138431986876429
 COUNTDOWN_CHANNEL = 912406038983098429
-PASSWORD_MESSAGE = 912689722776780853
-KEYHOLDER_PASSWORD_MESSAGE = 912693500104040478
-TARGET_DATE_MESSAGE = 913150001968975922
-WHEN = (datetime.combine(date.today(), time(1, 9, 00)) + timedelta(hours=-5, minutes=-30)).time()
+PASSWORD_MESSAGE = 913691965311291413
+KEYHOLDER_PASSWORD_MESSAGE = 913692784249143297
+TARGET_DATE_MESSAGE = 913692835604217927
+VERIFIED_ROLE = 910216582033199114
+KEYHOLDER_ROLE = 912695112520323082
+QUEUE_ROLE = 910216738602356736
+WHEN = (datetime.combine(date.today(), time(0, 0, 0)) + timedelta(hours=-5, minutes=-30)).time()
 
 TOKEN = ''
 
@@ -56,8 +59,8 @@ async def on_message(message):
     if message.content.startswith('!pswd') and message.channel.id == VERIFICATION_CHANNEL:
         if message.content.split()[-1] == pswd:
             member = message.author
-            role = get(member.guild.roles, name='verified')
-            role2 = get(member.guild.roles, name='unverified')
+            role = get(member.guild.roles, id=VERIFIED_ROLE)
+            role2 = get(member.guild.roles, id=QUEUE_ROLE)
             await member.add_roles(role)
             await member.remove_roles(role2)
             embedparam = discord.Embed(title='You are verified now', color=0x0add1f)
@@ -65,9 +68,9 @@ async def on_message(message):
             await message.delete()
         elif message.content.split()[-1] == key:
             member = message.author
-            role = get(member.guild.roles, name='verified')
-            role2 = get(member.guild.roles, name='keyholder')
-            role3 = get(member.guild.roles, name='unverified')
+            role = get(member.guild.roles, id=VERIFIED_ROLE)
+            role2 = get(member.guild.roles, id=KEYHOLDER_ROLE)
+            role3 = get(member.guild.roles, id=QUEUE_ROLE)
             await member.add_roles(role, role2)
             await member.remove_roles(role3)
             embedparam = discord.Embed(title='You are verified & keyholder now', color=0x0add1f)
@@ -75,8 +78,8 @@ async def on_message(message):
             await message.delete()
         else:
             member = message.author
-            role = get(member.guild.roles, name="unverified")
-            role2 = get(member.guild.roles, name="verified")
+            role = get(member.guild.roles, id=QUEUE_ROLE)
+            role2 = get(member.guild.roles, id=VERIFIED_ROLE)
             await member.add_roles(role)
             await member.remove_roles(role2)
             embedparam = discord.Embed(title='Wrong password!!', color=0xff1e00)

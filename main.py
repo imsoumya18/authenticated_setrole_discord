@@ -1,17 +1,26 @@
 import discord
 import asyncio
+import tweepy
 from datetime import datetime, date, time, timedelta
 from discord.utils import get
 
 RECORDS_BACKUP_CHANNEL = 912679967228297256
 VERIFICATION_CHANNEL = 910138431986876429
 COUNTDOWN_CHANNEL = 912406038983098429
+TWITTER_CHANNEL = 916032439908982794
+FOLLOWERS_TARGET_MESSAGE = 916036295187382292
 PASSWORD_MESSAGE = 913691965311291413
 KEYHOLDER_PASSWORD_MESSAGE = 913692784249143297
 TARGET_DATE_MESSAGE = 913692835604217927
 VERIFIED_ROLE = 910216582033199114
 KEYHOLDER_ROLE = 912695112520323082
 QUEUE_ROLE = 910216738602356736
+CONSUMER_KEY = '1IMTDBvzpoqYHbHMWx6evm9nw'
+CONSUMER_SECRET = 'iVCwcXcZosDeLnbq88ivceuaw1rdW0OgvUsiYvtrUjjFFy4zeS'
+ACCESS_KEY = '1466399636709511170-QbmXh6ya6ZDl9q7yFvEpMacJZH6GjY'
+ACCESS_SECRET = 'j4UHJ49PF1ALx7pIgCGafDNA8QmFiqY9HWmFrjQVW6PSe'
+BEARER_TOKEN = 'AAAAAAAAAAAAAAAAAAAAAKjaWQEAAAAAjMRm99enygWKiN8hnLCFBOhBtYE%3DRYiBALM9Oc0ktonAnIORnhaAx0aLceW5x5oHf0f2MdL8PPysvU'
+ACCOUNT_ID = '1455646119539712000'
 WHEN = (datetime.combine(date.today(), time(0, 0, 0)) + timedelta(hours=-5, minutes=-30)).time()
 
 TOKEN = ''
@@ -31,6 +40,13 @@ async def called_once_a_day():
     end = datetime(int(dt[-3]), int(dt[-2]), int(dt[-1]))
     today = datetime.today()
     await bot.get_channel(COUNTDOWN_CHANNEL).edit(name=str((end - today).days) + ' days remaining!')
+
+    client = tweepy.Client(consumer_key=CONSUMER_KEY, consumer_secret=CONSUMER_SECRET, access_token=ACCESS_KEY, access_token_secret=ACCESS_SECRET, bearer_token=BEARER_TOKEN)
+    followers_list = client.get_users_followers(ACCOUNT_ID)
+    followers = followers_list.meta['result_count']
+    target_cnt = await bot.get_channel(RECORDS_BACKUP_CHANNEL).fetch_message(FOLLOWERS_TARGET_MESSAGE)
+    target = int(target_cnt.content.split()[-1])
+    await bot.get_channel(TWITTER_CHANNEL).edit(name=str(target - followers) + ' followers more!')
 
 
 async def background_task():
